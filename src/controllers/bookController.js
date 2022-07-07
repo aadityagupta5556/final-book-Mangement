@@ -6,7 +6,7 @@ const createBook = async function (req, res) {
     if(!validation.isBodyEmpty(createBook)) return res.status(400).send({ status: false, message: "Please provide required data" });
     const { title,excerpt, userId, ISBN, category, subcategory, releaseAt } =data;
 
-    if(!validation.isValid(title)) return res.status(400).send({ status: false, message: "title tag is required" });
+     if(!validation.isValid(title)) return res.status(400).send({ status: false, message: "title tag is required" });
     if(!validation.isValid(excerpt)) return res.status(400).send({ status: false, message: "excerot tag is required" });
     if(userId=='' || !userId) return res.status(400).send({ status: false, message: "userId tag is required" });
     if(!validation.isValidOjectId(userId)) return res.status(400).send({ status: false, message: "Object id is Invalid" });
