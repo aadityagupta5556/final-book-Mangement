@@ -55,6 +55,16 @@ const isValidMobileNo = function(mobno)
     return regEx.test(mobno)
 }
 
+
+
+const regexForRating = /^[1-5]$/
+const checkRating = function (rating) {
+   return regexForRating.test(rating)  
+}
+
+
+
+
 // stri -- false ,nu --. true
 // const regex1 = /\d/;
 // const isVerifyISBN = function (value) {
@@ -74,4 +84,4 @@ const isValidMobileNo = function(mobno)
 
 
 
-module.exports={ isBodyEmpty, isValid,validateEmail,isValidMobileNo, isVerifyString, isValidOjectId,checkISBN,isValidPincode,isValidRelAt}
+module.exports={ isBodyEmpty, isValid,validateEmail,isValidMobileNo, isVerifyString, isValidOjectId,checkISBN,isValidPincode,isValidRelAt, checkRating}

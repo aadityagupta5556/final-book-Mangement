@@ -61,11 +61,13 @@ const registration = async function (req, res) {
 const login = async function (req, res) {
   try {
     let data = req.body;
+    
     if(!validation.isBodyEmpty(data)) return res.status(400).send({ status: false, message: "Please provide required data" });
     let email = req.body.email;
-    if(!validation.validateEmail(email)) return res.status(400).send({ status: false, message: "Email is Invalid" });
+    if(!validation.validateEmail(email)) return res.status(400).send({ status: false, message: "Email is required" });
 
     let password = req.body.password;
+    if(!password) return res.status(400).send({status:false, message:"Password is required"})
     if (password.length < 8) return res.status(400).send({ status: false, message: "password is too short" });
     if (password.length >= 16) return res.status(400).send({ status: false, message: "password is too Long" });
 

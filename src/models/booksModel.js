@@ -27,7 +27,7 @@ const booksModel = new mongoose.Schema({
         required: true
     },
     subcategory: {
-        type: Array,
+        type: [String],
         required: true
     },
     reviews: {

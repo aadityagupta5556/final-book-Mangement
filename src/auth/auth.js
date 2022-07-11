@@ -6,8 +6,16 @@ const tokenverification = function(req,res,next)
     try{
     let token = req.headers["x-api-key"];
     if(!token)return res.status(401).send({status:false, message:"Please enter token in header"});
-    let decodedToken = jwt.verify(token,"Project3");
-    if(!decodedToken)return  res.status(401).send({status:false, message:"Token is invalid"});
+    let decodedToken;
+    try{
+         decodedToken = jwt.verify(token,"Project3");
+    }
+    catch(err){
+        if(!decodedToken)return  res.status(401).send({status:false, message:"Token is invalid"});
+
+    }
+   
+   
 
     req.userId = decodedToken.userId;
         next();
