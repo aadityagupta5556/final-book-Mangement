@@ -6,11 +6,15 @@ const validation = require('../validator/validation')
 const registration = async function (req, res) {
   try {
     let data = req.body;
-    const { title, name, phone, email, password } = data;
-    if (validation.isBodyEmpty(data)) return res.status(400).send({ status: false, message: "Please provide required data" });
+    const { title, name, phone, email, password, address} = data;
+
+    if (!validation.isBodyEmpty(data)) return res.status(400).send({ status: false, message: "Please provide required data" });
 
     if (!validation.isValid(title)) return res.status(400).send({ status: false, message: "title tag is required" });
     if (!validation.isValid(name)) return res.status(400).send({ status: false, message: "name tag is required" });
+    data.name = data.name.trim().split(" ").filter(word=>word).join(" ")
+
+
     if (!validation.isValid(phone)) return res.status(400).send({ status: false, message: "phone tag is required" });
     if (!validation.isValid(email)) return res.status(400).send({ status: false, message: "email tag is required" });
     if (!validation.isValid(password)) return res.status(400).send({ status: false, message: "password tag is required" });
@@ -23,11 +27,23 @@ const registration = async function (req, res) {
     if (!validation.isValidMobileNo(phone)) return res.status(400).send({ status: false, message: "Mobile number is Invalid" });
     if (password.length < 8) return res.status(400).send({ status: false, message: "password is too short" });
     if (password.length >= 16) return res.status(400).send({ status: false, message: "password is too Long" });
+    if (address) {
+      // if street only has whitespace characters
+    if (!data.address.street?.trim() && data.address.street) {
+        return res.status(400).send({ status: false, message: "street is invalid" });}
+      // if city only has whitespace characters
+    if (!data.address.city?.trim() && data.address.city) {
+        return res.status(400).send({ status: false, message: "city is invalid" });}
+    if(validation.isVerifyString(data.address.city)) return  res.status(400).send({ status: false, message: "City doesn't contains any digit or symbol" });
+    if(validation.isValid(data.address.pincode)){
+      if(!validation.isValidPincode(data.address.pincode)) return res.status(400).send({ status: false, message: "please provide a valid pincode" });
+    }}
+  
 
     let isPresentEmail = await userModel.find({ email: email })
-    if (isPresentEmail.length != 0) return res.status(400).send({ status: false, message: "Please provide a unique Email Id" });
+    if (isPresentEmail.length != 0) return res.status(400).send({ status: false, message: "This email already exists" });
     let isPresentNumber = await userModel.find({ phone: phone })
-    if (isPresentNumber.length != 0) return res.status(400).send({ status: false, message: "Please provide a unique phone number" });
+    if (isPresentNumber.length != 0) return res.status(400).send({ status: false, message: "This Number already Exists" });
 
 
 
@@ -45,7 +61,7 @@ const registration = async function (req, res) {
 const login = async function (req, res) {
   try {
     let data = req.body;
-    if(validation.isBodyEmpty(data)) return res.status(400).send({ status: false, message: "Please provide required data" });
+    if(!validation.isBodyEmpty(data)) return res.status(400).send({ status: false, message: "Please provide required data" });
     let email = req.body.email;
     if(!validation.validateEmail(email)) return res.status(400).send({ status: false, message: "Email is Invalid" });
 
@@ -59,10 +75,14 @@ const login = async function (req, res) {
 
     let token = jwt.sign({
       userId: user._id.toString(),
-      iat: Math.floor(Date.now() / 1000),
-      exp: Math.floor(Date.now() / 1000) + 10 * 60 * 60 
+      email:user.email.toString()
 
-    }, "Project3");
+    }, "Project3",{expiresIn:"1h"});
+
+    // iat: Math.floor(Date.now() / 1000),
+    // exp: Math.floor(Date.now() / 1000) + 10 * 60 * 60 
+
+
 
     res.setHeader("x-api-key", token);
     res.status(200).send({ status: true, message: 'Success', data: token });

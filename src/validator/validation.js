@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 // const objectId = 
 const isBodyEmpty = function(data)
 {
-    if(!Object.keys(data).length==0) return false
+    if(Object.keys(data).length==0) return false
     return true 
 }
 
@@ -10,16 +10,33 @@ const isBodyEmpty = function(data)
 const isValid = function(value)
 {
     if(typeof value === 'undefined' || typeof value === null ) return false
-    if(typeof value ==='string' && value.trim().length === 0) return false
+    if(typeof value ==='string' && value.trim().length === 0) return false // name: ""
     return true
 }
 
 
+// pincode validation
+const isValidPincode = function (pincode) {
+    const pattern = /^[1-9]{1}[0-9]{2}\s?[0-9]{3}$/;
+    return pattern.test(pincode); // returns a boolean
+  };
+
 const isValidOjectId = function(id)
 {
-    if(mongoose.isValidObjectId(id)) return true;
+    if(mongoose.Types.ObjectId.isValid(id)) return true;
     return false;
 }
+
+// releasedAt validation
+const isValidRelAt = function (releasedAt) {
+    const pattern = /^\d{4}-\d{2}-\d{2}$/;
+    return pattern.test(releasedAt); // returns a boolean
+  };
+// ISBN validation  -R->T e->F
+const checkISBN  = function (ISBN) {
+    const pattern = /^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$/;
+    return pattern.test(ISBN); // returns a boolean
+  };
 
 const validateEmail = function (mail) {
     if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail)) {
@@ -53,12 +70,8 @@ const isValidMobileNo = function(mobno)
 
 // }
 
-// let regexForISBN=/^(?:ISBN(?:-10)?:? )?(?=[0-9X]{10}$|(?=(?:[0-9]+[- ]){3})[- 0-9X]{13}$)[0-9]{1,5}[- ]?[0-9]+[- ]?[0-9]+[- ]?[0-9X]$/
-// const checkISBN = function(isbn)
-// {
-//     return regexForISBN.test(isbn);
-// }
 
 
 
-module.exports={ isBodyEmpty, isValid,validateEmail,isValidMobileNo, isVerifyString, isValidOjectId}
+
+module.exports={ isBodyEmpty, isValid,validateEmail,isValidMobileNo, isVerifyString, isValidOjectId,checkISBN,isValidPincode,isValidRelAt}
