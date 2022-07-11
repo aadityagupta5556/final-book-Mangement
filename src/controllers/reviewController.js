@@ -16,9 +16,7 @@ const createReview = async function(req,res)
     if(!idExistOrNot) return res.status(404).send({status:false, message:"None of the books exists on this bookId"})
     // here i want to get review count, if i got any object
 
-    let prevReviewCount = idExistOrNot.reviews // when we have to need to know , prevReivewCount then we can use this variable
-
-
+    let prevReviewCount = idExistOrNot.reviews // when we have to need to know , prevReivewCount then we can use this variable 
 
     // review, rating, reviewer's name
 
@@ -55,14 +53,7 @@ const createReview = async function(req,res)
     filter["review"]=review;
   }
 
-  // {
-  //   "_id": ObjectId("88abc190ef0288abc190ef88"),
-  //   bookId: ObjectId("88abc190ef0288abc190ef55"),
-  //   reviewedBy: "Jane Doe",
-  //   reviewedAt: "2021-09-17T04:25:07.803Z",
-  //   rating: 4,
-  //   review: "An exciting nerving thriller. A gripping tale. A must read book."
-  // }
+
   let incReviewCount = await booksModel.findOneAndUpdate({_id:bookId, isDeleted:false},{$set:{reviews:prevReviewCount+1}})
   let createReviewData = await reviewModel.create(filter)
  let output  = {

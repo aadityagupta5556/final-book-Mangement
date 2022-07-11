@@ -9,8 +9,8 @@ router.post('/register', userController.registration);
 router.post('/login', userController.login);
 
 router.post('/books',auth.tokenverification, bookController.createBook);
-router.get('/books',bookController.getBooks);
-router.get('/books/:bookId',bookController.getBookById)
+router.get('/books',auth.tokenverification,bookController.getBooks);
+router.get('/books/:bookId', auth.tokenverification,bookController.getBookById)
 router.put('/books/:bookId',auth.tokenverification, bookController.updateBookById)
 router.delete('/books/:bookId',auth.tokenverification, bookController.deleteBookById)
 

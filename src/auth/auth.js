@@ -14,9 +14,6 @@ const tokenverification = function(req,res,next)
         if(!decodedToken)return  res.status(401).send({status:false, message:"Token is invalid"});
 
     }
-   
-   
-
     req.userId = decodedToken.userId;
         next();
     }catch(error){

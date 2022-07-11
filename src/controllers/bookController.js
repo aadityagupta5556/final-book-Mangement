@@ -30,7 +30,8 @@ const createBook = async function (req, res) {
     if (!validation.isValidOjectId(userId)) return res.status(400).send({ status: false, message: "Object id is Invalid" });
     if (!ISBN) return res.status(400).send({ status: false, message: "ISBN tag is required" });
 
-    data.title = data.title.trim().split(" ").filter(word => word).join(" ")
+    data.title = data.title.trim().split(" ").filter(word => word).join(" ") // empty ko leave kr deta hai 
+    
 
     // check all tags contains proper value or not 
     if (!validation.checkISBN(ISBN)) return res.status(400).send({ status: false, message: "please provide valid ISBN number" });
@@ -52,7 +53,7 @@ const createBook = async function (req, res) {
     let loggedInUserId = req.userId;
 
     if (loggedInUserId != data.userId) return res.status(403).send({ status: false, message: "you are not autherized" })
-    let istitleUnique = await booksModel.find({ title: title })
+    let istitleUnique = await booksModel.find({ title: data.title })
     if (istitleUnique.length != 0) return res.status(400).send({ status: false, message: "Please provide a unique title" })
     let isISBNUnique = await booksModel.find({ ISBN: ISBN })
     if (isISBNUnique.length != 0) return res.status(400).send({ status: false, message: "Please provide a unique ISBN" })
@@ -119,6 +120,8 @@ const getBooks = async function (req, res) {
   let filter = {
     isDeleted: false,
     ...data
+   
+  
   }
 
   if (userId == '') return res.status(400).send({ status: false, message: "userId should not be empty" })
@@ -174,26 +177,12 @@ const getBookById = async function (req, res) {
   
   let totalReviewsData = await reviewModel.find({bookId:bookId , isDeleted:false}).select({createdAt:0,updatedAt:0,isDeleted:0,__v:0})
   
+  
   // to create a unfreeze object --> .lean()
-  let getBook2 = JSON.parse(JSON.stringify(getBook))  // deepCopy
-  getBook2.reviewsData = totalReviewsData
-  // let output = {
-  //   "_id": getBook._id,
-  //   "title": getBook.title,
-  //   "excerpt": getBook.excerpt,
-  //   "userId": getBook.userId,
-  //   "category": getBook.category,
-  //   "subcategory": getBook.subcategory,
-  //   "isDeleted": getBook.isDeleted,
-  //   "reviews": getBook.reviews,
-  //   "releasedAt": getBook.releasedAt,
-  //   "createdAt": getBook.createdAt,
-  //   "updatedAt": getBook.updatedAt,
-
-  //   "reviewsData": []
-
-  // }
-  res.status(200).send({ status: true, message:'Success', data: getBook2 })
+  // let getBook2 = JSON.parse(JSON.stringify(getBook))  // deepCopy
+  // getBook2.reviewsData = totalReviewsData
+  getBook._doc['reviewsData']=totalReviewsData
+  res.status(200).send({ status: true, message:'Success', data: getBook })
 
 }
 
@@ -285,6 +274,7 @@ const deleteBookById = async function(req,res){
 
 
     let result = await booksModel.findOneAndUpdate({_id: bookId, isDeleted:false},{$set:{isDeleted:true, deletedAt: Date.now()}});
+    // Local format mai date insert krne ke liye  ===> new Date().toLocaleString()
     res.status(200).send({status:true,message:'Success'})
 
 }catch(error){
@@ -302,3 +292,4 @@ const deleteBookById = async function(req,res){
 module.exports = {
   createBook, getBookById, getBooks, updateBookById,deleteBookById
 }
+
